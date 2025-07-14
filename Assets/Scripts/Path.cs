@@ -6,7 +6,6 @@ using UnityEngine;
 public class Path
 {
     public Color? color;
-    // public List<Vector2> points = new();
     public List<Cell> cells = new();
     public LineRenderer lineRenderer;
 
@@ -28,6 +27,10 @@ public class Path
 
     public void Clear()
     {
+        foreach (var cell in cells)
+        {
+            cell.ClearColor();
+        }
         lineRenderer.positionCount = 0;
         cells.Clear();
     }

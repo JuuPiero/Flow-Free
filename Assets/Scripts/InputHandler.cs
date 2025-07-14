@@ -6,9 +6,10 @@ public class InputHandler : MonoBehaviour
     [SerializeField] private GridManager _gridManager;
     [SerializeField] private FlowManager _flowManager;
 
+    [SerializeField] private GameManager _gameManager;
+
     private bool _isDragging = false;
 
-    [SerializeField] private int _stepCount = 0;
 
     void Update()
     {
@@ -20,7 +21,7 @@ public class InputHandler : MonoBehaviour
             {
                 _isDragging = true;
                 _flowManager.BeginPath(cell);
-                _stepCount++;
+                _gameManager.stepCount++;
             }
         }
         else if (Input.GetMouseButton(0) && _isDragging)

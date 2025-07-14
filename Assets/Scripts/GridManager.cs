@@ -5,19 +5,25 @@ using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
-    [SerializeField] private FlowManager _flowManager;
-
+    [SerializeField] private GameManager _gameManager;
     [SerializeField] private GameObject _cellPrefab;
 
     [SerializeField] private int _rows;
+    public int Rows => _rows;
     [SerializeField] private int _columns;
+    public int Columns => _columns;
+
+    [SerializeField] private Vector2 _margin = new(5f, 0f);
+
     [SerializeField] private Vector2 _spacing = new(0f, 0f);
+    public Vector2 Spacing => _spacing;
     [SerializeField] private Vector2 _cellSize;
+    public Vector2 CellSize => _cellSize;
     [field: SerializeField] public List<Cell> AllCells = new();
 
     void Awake()
     {
-        AllCells = transform.GetChildren<Cell>();
+        //AllCells = transform.GetChildren<Cell>();
     }
 
     public void GenerateGrid()
@@ -40,16 +46,17 @@ public class GridManager : MonoBehaviour
                 cellGO.transform.localScale = _cellSize;
                 Cell cell = cellGO.GetComponent<Cell>();
                 cell.SetPosition(x, y);
-                // _allCells.Add(cell);
+                AllCells.Add(cell);
             }
         }
-        AllCells = transform.GetChildren<Cell>();
+        // AllCells = transform.GetChildren<Cell>();
+        AdjustCameraToFitGrid();
     }
 
 
-    void Clear()
+    public void Clear()
     {
-        transform.ClearChild();
+        transform.ClearChildren();
         AllCells.Clear();
     }
 
@@ -67,30 +74,45 @@ public class GridManager : MonoBehaviour
     {
         _rows = levelData.rows;
         _columns = levelData.columns;
-        _flowManager?.SetColorPairs(levelData.colorPairs);
+        _cellSize = levelData.cellSize;
+        GenerateGrid();
     }
 
-    public void ExportLevel()
+#if UNITY_EDITOR
+    void OnDrawGizmos()
     {
-        LevelDataSO levelData = ScriptableObject.CreateInstance<LevelDataSO>();
-        levelData.rows = _rows;
-        levelData.columns = _columns;
-        levelData.colorPairs = _flowManager?.GetColorPairs();
-        levelData.cellSize = _cellSize;
-
-        string folder = "Assets/Levels";
-        if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
-
-        // Đặt tên file không trùng lặp
-        string path = AssetDatabase.GenerateUniqueAssetPath($"{folder}/NewLevel.asset");
-
-        // Tạo asset
-        AssetDatabase.CreateAsset(levelData, path);
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
-
-        Debug.Log($"Level saved to: {path}");
-        EditorUtility.FocusProjectWindow();
-        Selection.activeObject = levelData;
+        AllCells?.ForEach(cell =>
+        {
+            Handles.Label(cell.transform.position, $"{cell.Position.x},{cell.Position.y}");
+        });
     }
+#endif
+    void AdjustCameraToFitGrid()
+    {
+        float cellWidth = _cellSize.x;
+        float cellHeight = _cellSize.y;
+        float spacingX = _spacing.x;
+        float spacingY = _spacing.y;
+
+        float totalWidth = _columns * cellWidth + (_columns - 1) * spacingX + _margin.x * 2;
+        float totalHeight = _rows * cellHeight + (_rows - 1) * spacingY + _margin.y * 2;
+
+        float screenRatio = (float)Screen.width / Screen.height;
+        float targetRatio = totalWidth / totalHeight;
+
+        Camera cam = Camera.main;
+
+        if (screenRatio >= targetRatio)
+        {
+            cam.orthographicSize = totalHeight / 2f;
+        }
+        else
+        {
+            float adjustedHeight = totalWidth / screenRatio;
+            cam.orthographicSize = adjustedHeight / 2f;
+        }
+
+        cam.transform.position = new Vector3(0, 0, -10);
+    }
+
 }

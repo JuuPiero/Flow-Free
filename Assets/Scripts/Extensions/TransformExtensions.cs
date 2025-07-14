@@ -3,7 +3,7 @@ using UnityEngine;
 
 public static class TransformExtensions
 {
-    public static void ClearChild(this Transform transform)
+    public static void ClearChildren(this Transform transform)
     {
         int count = transform.childCount;
         while (count > 0)

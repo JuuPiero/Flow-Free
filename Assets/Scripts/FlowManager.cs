@@ -1,18 +1,26 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class FlowManager : MonoBehaviour
 {
+    [SerializeField] private GameManager _gameManager;
+
     [SerializeField] private GameObject _linePrefab;
-    [SerializeField] private GridManager _gridManager;
+
     [SerializeField] private List<ColorPair> _colorPairs;
     [SerializeField] private List<Path> _paths = new();
+    public List<Path> Paths => _paths;
     [SerializeField] private Path _currentPath = new();
     bool _isDrawing;
+
+    // public event Action On 
 
     public void SetColorPairs(List<ColorPair> colorPairs)
     {
         _colorPairs = colorPairs;
+        GenerateFlow();
+        GeneratePathTemplate();
     }
 
     public List<ColorPair> GetColorPairs()
@@ -20,29 +28,34 @@ public class FlowManager : MonoBehaviour
         return _colorPairs;
     }
 
-
     private void Start()
     {
-        LoadLevel();
+        // GenerateFlow();
+        // GeneratePathTemplate();
     }
 
-    private void LoadLevel()
+    public void GenerateFlow()
     {
+        Clear();
         foreach (var pair in _colorPairs)
         {
-            Cell startCell = _gridManager.GetCell(pair.start);
-            Cell endCell = _gridManager.GetCell(pair.end);
-
+            var gridManager = _gameManager.gridManager;
+            Cell startCell = gridManager.GetCell(pair.start);
+            Cell endCell = gridManager.GetCell(pair.end);
             startCell.IsDot = true;
             endCell.IsDot = true;
-
             startCell.SetColor(pair.color);
             endCell.SetColor(pair.color);
+        }
+    }
 
+    private void GeneratePathTemplate()
+    {
+        foreach (var pair in _colorPairs)
+        { 
             GameObject pathGO = Instantiate(_linePrefab, transform.position, Quaternion.identity, transform);
             LineRenderer lr = pathGO.GetComponent<LineRenderer>();
             lr.material.color = pair.color;
-
             _paths.Add(new Path
             {
                 color = pair.color,
@@ -50,10 +63,14 @@ public class FlowManager : MonoBehaviour
             });
         }
     }
+
+    public void Clear()
+    {
+        transform.ClearChildren();
+        _paths.Clear();
+    }
     public void BeginPath(Cell cell)
     {
-        // Vector2 pos = cell.transform.position;
-
         foreach (var path in _paths)
         {
             // Nếu bấm vào điểm cuối của path nào đó CHƯA HOÀN THÀNH → tiếp tục kéo
@@ -99,8 +116,6 @@ public class FlowManager : MonoBehaviour
     {
         if (!_isDrawing || _currentPath == null) return;
 
-        // Vector2 pos = cell.transform.position;
-
         // Không cho đè lên path khác màu
         foreach (var path in _paths)
         {
@@ -123,13 +138,14 @@ public class FlowManager : MonoBehaviour
             return; // Không cho vẽ tiếp
         }
 
-
         // Nếu không liền kề
-        if (_currentPath.CellCount > 0)
-        {
-            var last = _currentPath.LastCell;
-            if (Vector2.Distance(cell.transform.position, last.transform.position) > 1.1f) return;
-        }
+        Vector2Int a = _currentPath.LastCell.Position;
+        Vector2Int b = cell.Position;
+        int dx = Mathf.Abs(a.x - b.x);
+        int dy = Mathf.Abs(a.y - b.y);
+        if (!((dx == 1 && dy == 0) || (dx == 0 && dy == 1)))
+            return; // Không liền kề theo trục ngang/dọc
+
 
         //  Nếu đi lùi lại
         if (_currentPath.Contains(cell))
@@ -153,8 +169,8 @@ public class FlowManager : MonoBehaviour
         _isDrawing = false;
         if (IsWin())
         {
-            Debug.Log("You Win 123!");
-            // hoặc gọi Event, mở UI, v.v.
+            // Debug.Log("You Win 123!");
+            Navigation.Modal?.ShowModal("CompletePopup");
         }
     }
 
@@ -162,7 +178,7 @@ public class FlowManager : MonoBehaviour
     {
         changedPath.DrawPath();
 
-        foreach (var cell in _gridManager.AllCells)
+        foreach (var cell in _gameManager.gridManager.AllCells)
         {
             cell.ClearColor(); // Mặc định xóa nền trước
         }
@@ -171,8 +187,6 @@ public class FlowManager : MonoBehaviour
         {
             foreach (var cell in path.cells)
             {
-                // Chỉ tô nếu không phải Dot
-                // if (!cell.IsDot)
                 cell.SetBackgroundColor(path.color.Value);
             }
         }
@@ -206,5 +220,5 @@ public class FlowManager : MonoBehaviour
         }
         return true;
     }
-   
+
 }
