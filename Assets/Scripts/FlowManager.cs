@@ -160,7 +160,6 @@ public class FlowManager : MonoBehaviour
         _currentPath.Add(cell);
         UpdatePath(_currentPath);
     }
-
     public void EndPath()
     {
         if (!_isDrawing || _currentPath == null || _currentPath.CellCount < 2) return;
@@ -216,6 +215,25 @@ public class FlowManager : MonoBehaviour
         foreach (var path in _paths)
         {
             if (!IsPathCompleted(path))
+                return false;
+        }
+
+        // Check: Mọi ô đều được phủ bởi path (trừ Dot)
+        foreach (var cell in _gameManager.gridManager.AllCells)
+        {
+            if (cell.IsDot) continue;
+
+            bool isCovered = false;
+            foreach (var path in _paths)
+            {
+                if (path.Contains(cell))
+                {
+                    isCovered = true;
+                    break;
+                }
+            }
+
+            if (!isCovered)
                 return false;
         }
         return true;
