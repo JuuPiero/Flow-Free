@@ -26,6 +26,7 @@ public class LevelButtonUI : MonoBehaviour
 
     public void PlayGame()
     {
+        AudioManager.Instance?.PlaySFX("Click");
         LevelManager.Instance.currentLevel = _levelData;
         SceneManager.LoadScene("Game");
     }

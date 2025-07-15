@@ -21,21 +21,25 @@ public class DifficultyScreen : ScreenBase
         base.Awake();
         _backButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX("Click");
             Navigation.Stack.GoBack();
         });
 
         _easyLevelButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX("Click");
             Navigation.Stack.Navigate("LevelScreen", LevelManager.Instance.easyLevels);
         });
 
         _mediumLevelButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX("Click");
             Navigation.Stack.Navigate("LevelScreen", LevelManager.Instance.mediumLevels);
         });
 
         _hardLevelButton?.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX("Click");
             Navigation.Stack.Navigate("LevelScreen", LevelManager.Instance.hardLevels);
         });
     }

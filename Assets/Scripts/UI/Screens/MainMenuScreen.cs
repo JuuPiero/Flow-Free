@@ -12,11 +12,13 @@ public class MainMenuScreen : ScreenBase
 
         _playButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX("Click");
             Navigation.Stack.Navigate("DifficultyScreen");
         });
 
         _quitButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX("Click");
             Application.Quit();
         });
     }

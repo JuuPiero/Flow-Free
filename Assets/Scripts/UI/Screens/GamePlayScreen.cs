@@ -13,6 +13,7 @@ public class GamePlayScreen : ScreenBase
 
     [SerializeField] private Button _musicButton;
 
+    [SerializeField] private Image _musicImage;
     [SerializeField] private Sprite _musicEnableSprite;
     [SerializeField] private Sprite _musicDisableSprite;
     
@@ -35,11 +36,13 @@ public class GamePlayScreen : ScreenBase
 
         _homeButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX("Click");
             SceneManager.LoadScene("MainMenu");
         });
 
         _replayButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX("Click");
             _gameManager?.ResetGame();
         });
 
@@ -56,6 +59,17 @@ public class GamePlayScreen : ScreenBase
 
     private void ToggleMusic()
     {
+        AudioManager.Instance.PlaySFX("Click");
+        if (AudioManager.Instance.bgmSource.isPlaying)
+        {
+            AudioManager.Instance.StopBGM();
+            _musicImage.sprite = _musicDisableSprite;
+        }
+        else
+        {
+            AudioManager.Instance.PlayBGM("Main");
+            _musicImage.sprite = _musicEnableSprite;
+        }
 
     }
 

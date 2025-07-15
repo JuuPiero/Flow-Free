@@ -32,8 +32,7 @@ public class LevelManager : Singleton<LevelManager>
         }
         else
         {
-            Debug.Log("Đã hết level trong danh sách hiện tại.");
-            // Có thể load lại từ đầu, chuyển difficulty, hoặc kết thúc game
+            Debug.Log("Đã hết level");
         }
     }
 

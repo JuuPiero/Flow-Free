@@ -28790,6 +28790,7 @@ MonoBehaviour:
   _homeButton: {fileID: 1875940531}
   _replayButton: {fileID: 1941801492}
   _musicButton: {fileID: 1076362419}
+  _musicImage: {fileID: 844327506}
   _musicEnableSprite: {fileID: 21300000, guid: 1199428c83127db4f8b3e893c45a5070, type: 3}
   _musicDisableSprite: {fileID: 21300000, guid: 12c3f305b8c47ce40b55d549b86d9718, type: 3}
   _levelText: {fileID: 1116450942}

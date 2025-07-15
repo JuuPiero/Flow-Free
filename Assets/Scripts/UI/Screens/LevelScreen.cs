@@ -16,6 +16,7 @@ public class LevelScreen : ScreenBase
         base.Awake();
         _backButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance.PlaySFX("Click");
             Navigation.Stack.GoBack();
         });
     }

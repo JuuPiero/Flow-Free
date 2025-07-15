@@ -6,8 +6,6 @@ using UnityEngine.UI;
 
 public class CompletePopup : ScreenBase
 {
-
-
     [SerializeField] private GameManager _gameManager;
     [SerializeField] private TMP_Text _turnsText;
 
@@ -29,17 +27,20 @@ public class CompletePopup : ScreenBase
 
         _homeButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance?.PlaySFX("Click");
             SceneManager.LoadScene("MainMenu");
         });
 
         _resetButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance?.PlaySFX("Click");
             _gameManager?.ResetGame();
             Navigation.Modal.CloseModal();
         });
 
         _nextButton.onClick.AddListener(() =>
         {
+            AudioManager.Instance?.PlaySFX("Click");
             _gameManager.NextLevel();
             Navigation.Modal.CloseModal();
         });
